@@ -1,0 +1,5 @@
+In this assignment, you will write a program that creates 3 threads. These threads will access a shared resource, an integer called buffer, one at a time. The buffer will initially be set to 0. They will each print their thread ID, process ID and the buffer's current value in one statement, then increment the buffer by one. Use a mutex to ensure this whole process is not interrupted.
+
+Have the threads modify the buffer a total of 24 times. When each thread is done, it should return the number of times it modified the buffer to the main thread. The total number of modifications should be exactly 24.
+
+The threads do not need to access the buffer in any particular order, but over multiple runs, it should be obvious that all three are getting a fair chance. If one thread seems to dominate over multiple runs, try introducing a sleep to simulate work between the mutex lock and unlock, just before the lock, or just after the unlock. You may also think of putting a thread barrier so that all the thread start executing simultaneously. To know about thread barrier, read man pages.
