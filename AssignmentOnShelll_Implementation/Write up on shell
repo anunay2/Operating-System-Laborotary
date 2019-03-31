@@ -1,0 +1,53 @@
+Write up:
+
+This is the minimal shell implementation written in C.
+
+For testing.
+
+Execute with 
+Compile the program: gcc shell.c
+
+And then execute it: ./a.out
+
+To check if it is working type command such as
+
+ls
+ping
+help
+cd
+exit
+
+Explanation of the working:
+
+The basic structure of the loop goes as followed
+-Read:We read the command given by the user
+-Parse:We seperate the command given by the user
+-Execute:We execute the given command.
+
+This process goes on infinitely unless the user press exit.
+
+Now let's explore each step one by one:
+
+Read:In the read line function I take input from the user,using getchar command using  pointer to the character and feed it into the line variable.
+
+Parse:so if we look back at the loop, we see that we now have implemented read_line(), and we have the line of input. Now, we need to parse that line into a list of arguments. I’m going to make a glaring simplification here, and say that we won’t allow quoting or backslash escaping in our command line arguments. Instead, we will simply use whitespace to separate arguments from each other. So the command echo "this message" would not call echo with a single argument this message, but rather it would call echo with two arguments: "this and message".
+
+With those simplifications, all we need to do is “tokenize” the string using whitespace as delimiters. That means we can break out the classic library function strtok to do some of the  work for us.
+
+Execute:This is the meat of the shell.Please bear with me with this information
+
+There are only two ways of starting processes on Unix. The first one (which almost doesn’t count) is by being Init. You see, when a Unix computer boots, its kernel is loaded. Once it is loaded and initialized, the kernel starts only one process, which is called Init. This process runs for the entire length of time that the computer is on, and it manages loading up the rest of the processes that you need for your computer to be useful.
+
+Since most programs aren’t Init, that leaves only one practical way for processes to get started: the fork() system call. When this function is called, the operating system makes a duplicate of the process and starts them both running. The original process is called the “parent”, and the new one is called the “child”. fork() returns 0 to the child process, and it returns to the parent the process ID number (PID) of its child. In essence, this means that the only way for new processes is to start is by an existing one duplicating itself.
+
+This might sound like a problem. Typically, when you want to run a new process, you don’t just want another copy of the same program – you want to run a different program. That’s what the exec() system call is all about. It replaces the current running program with an entirely new one. This means that when you call exec, the operating system stops your process, loads up the new program, and starts that one in its place. A process never returns from an exec() call (unless there’s an error).
+
+With these two system calls, we have the building blocks for how most programs are run on Unix. First, an existing process forks itself into two separate ones. Then, the child uses exec() to replace itself with a new program. The parent process can continue doing other things, and it can even keep tabs on its children, using the system call wait().
+
+There are different category of the commands in the shell called built-in which cannot use exec system call.For example let's discuss about the command cd.if we exec cd in the child process then it won't affect the state of the parent process i.e. it won't change the state of the parent process.So,these commands require special treatment and has to be executed in the parent process without fork() system call.Here I have implemented three commands in that way namely cd,help and exit.
+
+
+Obviously,the shell isn't feature rich.It's is just the demonstration of how the actual shell works.
+
+
+
